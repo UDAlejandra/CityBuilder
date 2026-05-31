@@ -3,29 +3,36 @@
 
 using namespace std;
 
-struct BuildingNode {
+struct BuildingNode
+{
     string name;
     BuildingNode* next;
+
+    BuildingNode(string n)
+    {
+        name = n;
+        next = nullptr;
+    }
 };
 
-class LinkedList {
-
+class LinkedList
+{
 private:
     BuildingNode* head;
 
 public:
 
-    LinkedList() {
+    LinkedList()
+    {
         head = nullptr;
     }
 
-    void insert(string name) {
+    void insert(string name)
+    {
+        BuildingNode* newNode = new BuildingNode(name);
 
-        BuildingNode* newNode = new BuildingNode;
-        newNode->name = name;
-        newNode->next = nullptr;
-
-        if(head == nullptr) {
+        if(head == nullptr)
+        {
             head = newNode;
             return;
         }
@@ -38,29 +45,31 @@ public:
         temp->next = newNode;
     }
 
-    void display() {
-
-        BuildingNode* temp = head;
-
-        while(temp != nullptr) {
-            cout << temp->name << " -> ";
-            temp = temp->next;
-        }
-
-        cout << "NULL" << endl;
-    }
-
-    int size() {
-
+    int size()
+    {
         int count = 0;
 
         BuildingNode* temp = head;
 
-        while(temp != nullptr) {
+        while(temp != nullptr)
+        {
             count++;
             temp = temp->next;
         }
 
         return count;
+    }
+
+    void display()
+    {
+        BuildingNode* temp = head;
+
+        while(temp != nullptr)
+        {
+            cout << temp->name << " -> ";
+            temp = temp->next;
+        }
+
+        cout << "NULL" << endl;
     }
 };
