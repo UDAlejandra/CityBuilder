@@ -1,0 +1,20 @@
+{
+    "buildings": [
+        {
+            "name": "House",
+            "happiness": 50
+        },
+        {
+            "name": "School",
+            "happiness": 75
+        },
+        {
+            "name": "Park",
+            "happiness": 90
+        },
+        {
+            "name": "Hospital",
+            "happiness": 85
+        }
+    ]
+}
