@@ -1,39 +1,44 @@
+/*
+Variant: City Builder
+Students:Angel Ivan Lopez
+Maria Alejandra Ortiz
+Jenny Vanesa Leon
+*/
 #include <iostream>
 #include <string>
 
 using namespace std;
 
-struct Building {
-
+struct Building
+{
     string name;
     int happiness;
 };
 
-struct TreeNode {
-
+struct TreeNode
+{
     Building data;
     TreeNode* left;
     TreeNode* right;
+
+    TreeNode(Building b)
+    {
+        data = b;
+        left = nullptr;
+        right = nullptr;
+    }
 };
 
-class BST {
-
+class BST
+{
 private:
 
     TreeNode* root;
 
-    TreeNode* insert(TreeNode* node, Building b) {
-
-        if(node == nullptr) {
-
-            TreeNode* newNode = new TreeNode;
-
-            newNode->data = b;
-            newNode->left = nullptr;
-            newNode->right = nullptr;
-
-            return newNode;
-        }
+    TreeNode* insert(TreeNode* node, Building b)
+    {
+        if(node == nullptr)
+            return new TreeNode(b);
 
         if(b.happiness < node->data.happiness)
             node->left = insert(node->left, b);
@@ -43,8 +48,8 @@ private:
         return node;
     }
 
-    void inorder(TreeNode* node) {
-
+    void inorder(TreeNode* node)
+    {
         if(node == nullptr)
             return;
 
@@ -52,8 +57,9 @@ private:
 
         cout
             << node->data.name
-            << " "
+            << " ("
             << node->data.happiness
+            << ")"
             << endl;
 
         inorder(node->right);
@@ -61,15 +67,28 @@ private:
 
 public:
 
-    BST() {
+    BST()
+    {
         root = nullptr;
     }
 
-    void insert(Building b) {
+    void insert(Building b)
+    {
         root = insert(root, b);
     }
 
-    void print() {
+    void print()
+    {
         inorder(root);
+    }
+
+    Building getMax()
+    {
+        TreeNode* temp = root;
+
+        while(temp->right != nullptr)
+            temp = temp->right;
+
+        return temp->data;
     }
 };
