@@ -1,3 +1,9 @@
+# ==========================================
+# Team Number: 3
+# Variant Name: Valid layout, satisfying zoning rules
+# Student Names: Ivan Lopez, Maria Ortiz, Jenny Leon
+# ==========================================
+
 def backtracking_algorithm(buildings, rows=3, columns=3):
     """
     In this phase of the program, the backtracking algorithm will be used to evaluate the program's

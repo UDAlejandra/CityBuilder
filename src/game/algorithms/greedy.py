@@ -1,3 +1,9 @@
+# ==========================================
+# Team Number: 3
+# Variant Name: Place highest happiness building first
+# Student Names: Ivan Lopez, Maria Ortiz, Jenny Leon
+# ==========================================
+
 def greedy_algorithm(buildings, rows=3, columns=3):
     """
     In this phase of the code, we use the greedy algorithm to sort the buildings from highest to 

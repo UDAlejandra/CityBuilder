@@ -1,3 +1,9 @@
+/* ==========================================
+   Team Number: 3
+   Variant Name: Happiness score tree (BST)
+   Student Names: Ivan Lopez, Maria Ortiz, Jenny Leon
+   ========================================== */
+
 #include <iostream>
 #include <string>
 
