@@ -1,14 +1,21 @@
+/*
+Variant: City Builder
+Students:Angel Ivan Lopez
+Maria Alejandra Ortiz
+Jenny Vanesa Leon
+*/
+
 #include <iostream>
 #include <string>
 
 using namespace std;
 
-struct BuildingNode
+struct ListNode
 {
     string name;
-    BuildingNode* next;
+    ListNode* next;
 
-    BuildingNode(string n)
+    ListNode(string n)
     {
         name = n;
         next = nullptr;
@@ -18,7 +25,7 @@ struct BuildingNode
 class LinkedList
 {
 private:
-    BuildingNode* head;
+    ListNode* head;
 
 public:
 
@@ -29,7 +36,7 @@ public:
 
     void insert(string name)
     {
-        BuildingNode* newNode = new BuildingNode(name);
+        ListNode* newNode = new ListNode(name);
 
         if(head == nullptr)
         {
@@ -37,7 +44,7 @@ public:
             return;
         }
 
-        BuildingNode* temp = head;
+        ListNode* temp = head;
 
         while(temp->next != nullptr)
             temp = temp->next;
@@ -49,7 +56,7 @@ public:
     {
         int count = 0;
 
-        BuildingNode* temp = head;
+        ListNode* temp = head;
 
         while(temp != nullptr)
         {
@@ -62,7 +69,7 @@ public:
 
     void display()
     {
-        BuildingNode* temp = head;
+        ListNode* temp = head;
 
         while(temp != nullptr)
         {
