@@ -1,14 +1,14 @@
-def greedy_algorithm(buildings, rows=3, columns=3):
+def greedy_algorithm(buildings, rows=8, columns=8):
     """
     In this phase of the code, we use the greedy algorithm to sort the buildings from highest to 
     lowest happiness, filling the “grid” with the options that provide the most happiness 
 
     Args:
         buildings : This variable contains a list of the building's name and happiness index
-        rows :(We are currently using a 3x3 grid.) The path across the board is based on these variables.
-        columns :(We are currently using a 3x3 grid.) The path across the board is based on these variables.
+        rows : The path across the board is based on these variables.
+        columns : The path across the board is based on these variables.
     Returns:
-        An 
+        An arrangement of the buildings on the grid that satisfies the constraints, or None if no solution is found.
     """
     listBuildings = sorted(buildings, key=lambda x: x.happiness, reverse=True)
 
