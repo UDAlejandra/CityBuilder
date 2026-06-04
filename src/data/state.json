@@ -1,0 +1,7 @@
+{
+  "totalBuildings": 6,
+  "happiestBuilding": {
+    "name": "Park",
+    "happiness": 90
+  }
+}
