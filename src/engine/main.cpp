@@ -1,15 +1,17 @@
+/*
+Variant: City Builder
+Students:
+Angel Ivan Lopez
+Maria Alejandra Ortiz
+Jenny Vanesa Leon
+*/
+
 #include <iostream>
 #include <fstream>
-
-#include "json.hpp"
+#include <string>
 
 using namespace std;
-using json = nlohmann::json;
 
-/*
-    Se incluyen los otros .cpp
-    porque el proyecto no usa headers.
-*/
 #include "linked_list.cpp"
 #include "tree.cpp"
 
@@ -17,22 +19,60 @@ int main()
 {
     ifstream input("../data/input.json");
 
-    if(!input.is_open())
+    if (!input.is_open())
     {
         cout << "Error abriendo input.json" << endl;
         return 1;
     }
 
-    json data;
-    input >> data;
+    string jsonText;
+    string line;
+
+    while (getline(input, line))
+    {
+        jsonText += line;
+    }
+
+    input.close();
 
     LinkedList adjacencyList;
     BST happinessTree;
 
-    for(auto& building : data["buildings"])
+    size_t pos = 0;
+
+    while (true)
     {
-        string name = building["name"];
-        int happiness = building["happiness"];
+        size_t namePos = jsonText.find("\"name\"", pos);
+
+        if (namePos == string::npos)
+            break;
+
+        size_t colonPos = jsonText.find(":", namePos);
+        size_t firstQuote = jsonText.find("\"", colonPos + 1);
+        size_t secondQuote = jsonText.find("\"", firstQuote + 1);
+
+        string name = jsonText.substr(
+            firstQuote + 1,
+            secondQuote - firstQuote - 1);
+
+        size_t happinessPos =
+            jsonText.find("\"happiness\"", secondQuote);
+
+        if (happinessPos == string::npos)
+            break;
+
+        size_t happinessColon =
+            jsonText.find(":", happinessPos);
+
+        size_t happinessEnd =
+            jsonText.find_first_of(",}", happinessColon);
+
+        string happinessStr =
+            jsonText.substr(
+                happinessColon + 1,
+                happinessEnd - happinessColon - 1);
+
+        int happiness = stoi(happinessStr);
 
         adjacencyList.insert(name);
 
@@ -41,37 +81,56 @@ int main()
         b.happiness = happiness;
 
         happinessTree.insert(b);
+
+        pos = happinessEnd;
+    }
+
+    cout << "Total edificios: "
+         << adjacencyList.size()
+         << endl;
+
+    if (adjacencyList.size() == 0)
+    {
+        cout << "No se encontraron edificios en input.json" << endl;
+        return 1;
     }
 
     Building happiest = happinessTree.getMax();
 
-    json output;
-
-    output["totalBuildings"] =
-        adjacencyList.size();
-
-    output["happiestBuilding"]["name"] =
-        happiest.name;
-
-    output["happiestBuilding"]["happiness"] =
-        happiest.happiness;
-
     ofstream state("../data/state.json");
 
-    state << output.dump(4);
+    if (!state.is_open())
+    {
+        cout << "Error creando state.json" << endl;
+        return 1;
+    }
+
+    state << "{\n";
+    state << "  \"totalBuildings\": "
+          << adjacencyList.size()
+          << ",\n";
+
+    state << "  \"happiestBuilding\": {\n";
+    state << "    \"name\": \""
+          << happiest.name
+          << "\",\n";
+
+    state << "    \"happiness\": "
+          << happiest.happiness
+          << "\n";
+
+    state << "  }\n";
+    state << "}\n";
 
     state.close();
 
-    cout << "===== BUILDINGS =====" << endl;
+    cout << "\n=== BUILDING LIST ===\n";
     adjacencyList.display();
 
-    cout << endl;
-    cout << "===== BST ORDER =====" << endl;
+    cout << "\n=== HAPPINESS TREE ===\n";
     happinessTree.print();
 
-    cout << endl;
-    cout << "state.json generado correctamente"
-         << endl;
+    cout << "\nstate.json generado correctamente\n";
 
     return 0;
 }
