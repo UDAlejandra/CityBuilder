@@ -1,4 +1,13 @@
+# ==========================================
+# Team Number: 3
+# Variant Name: Valid layout, satisfying zoning rules
+# Student Names: Ivan Lopez, Maria Ortiz, Jenny Leon
+# ==========================================
+
+
+
 def backtracking_algorithm(buildings, rows=8, columns=8):
+
     """
     In this phase of the program, the backtracking algorithm will be used to evaluate the program's
     constraint, which does not allow two buildings of the same type to be placed next to each other.

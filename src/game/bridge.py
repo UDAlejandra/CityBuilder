@@ -1,3 +1,10 @@
+# ==========================================
+# Team Number: 3
+# Variant Name: bridge.py
+# Student Names: Ivan Lopez, Maria Ortiz, Jenny Leon
+# ==========================================
+
+
 import json
 import os
 
@@ -57,3 +64,4 @@ def load_satates():
 
         print(f"Error: The file {urlState} was not found.")
         return {}
+

@@ -1,9 +1,8 @@
-/*
-Variant: City Builder
-Students:Angel Ivan Lopez
-Maria Alejandra Ortiz
-Jenny Vanesa Leon
-*/
+/* ==========================================
+   Team Number: 3
+   Variant Name: Happiness score tree (BST)
+   Student Names: Ivan Lopez, Maria Ortiz, Jenny Leon
+   ========================================== */
 
 #include <iostream>
 #include <string>
