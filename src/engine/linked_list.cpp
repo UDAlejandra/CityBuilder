@@ -4,17 +4,19 @@
    Student Names: Ivan Lopez, Maria Ortiz, Jenny Leon
    ========================================== */
 
+
+
 #include <iostream>
 #include <string>
 
 using namespace std;
 
-struct BuildingNode
+struct ListNode
 {
     string name;
-    BuildingNode* next;
+    ListNode *next;
 
-    BuildingNode(string n)
+    ListNode(string n)
     {
         name = n;
         next = nullptr;
@@ -24,10 +26,9 @@ struct BuildingNode
 class LinkedList
 {
 private:
-    BuildingNode* head;
+    ListNode *head;
 
 public:
-
     LinkedList()
     {
         head = nullptr;
@@ -35,17 +36,17 @@ public:
 
     void insert(string name)
     {
-        BuildingNode* newNode = new BuildingNode(name);
+        ListNode *newNode = new ListNode(name);
 
-        if(head == nullptr)
+        if (head == nullptr)
         {
             head = newNode;
             return;
         }
 
-        BuildingNode* temp = head;
+        ListNode *temp = head;
 
-        while(temp->next != nullptr)
+        while (temp->next != nullptr)
             temp = temp->next;
 
         temp->next = newNode;
@@ -55,9 +56,9 @@ public:
     {
         int count = 0;
 
-        BuildingNode* temp = head;
+        ListNode *temp = head;
 
-        while(temp != nullptr)
+        while (temp != nullptr)
         {
             count++;
             temp = temp->next;
@@ -68,9 +69,9 @@ public:
 
     void display()
     {
-        BuildingNode* temp = head;
+        ListNode *temp = head;
 
-        while(temp != nullptr)
+        while (temp != nullptr)
         {
             cout << temp->name << " -> ";
             temp = temp->next;
