@@ -13,7 +13,7 @@ using namespace std;
 struct ListNode
 {
     string name;
-    ListNode* next;
+    ListNode *next;
 
     ListNode(string n)
     {
@@ -25,10 +25,9 @@ struct ListNode
 class LinkedList
 {
 private:
-    ListNode* head;
+    ListNode *head;
 
 public:
-
     LinkedList()
     {
         head = nullptr;
@@ -36,17 +35,17 @@ public:
 
     void insert(string name)
     {
-        ListNode* newNode = new ListNode(name);
+        ListNode *newNode = new ListNode(name);
 
-        if(head == nullptr)
+        if (head == nullptr)
         {
             head = newNode;
             return;
         }
 
-        ListNode* temp = head;
+        ListNode *temp = head;
 
-        while(temp->next != nullptr)
+        while (temp->next != nullptr)
             temp = temp->next;
 
         temp->next = newNode;
@@ -56,9 +55,9 @@ public:
     {
         int count = 0;
 
-        ListNode* temp = head;
+        ListNode *temp = head;
 
-        while(temp != nullptr)
+        while (temp != nullptr)
         {
             count++;
             temp = temp->next;
@@ -69,9 +68,9 @@ public:
 
     void display()
     {
-        ListNode* temp = head;
+        ListNode *temp = head;
 
-        while(temp != nullptr)
+        while (temp != nullptr)
         {
             cout << temp->name << " -> ";
             temp = temp->next;
