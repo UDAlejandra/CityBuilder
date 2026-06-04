@@ -1,6 +1,7 @@
 /*
 Variant: City Builder
-Students:Angel Ivan Lopez
+Students:
+Angel Ivan Lopez
 Maria Alejandra Ortiz
 Jenny Vanesa Leon
 */
@@ -18,7 +19,7 @@ int main()
 {
     ifstream input("../data/input.json");
 
-    if(!input.is_open())
+    if (!input.is_open())
     {
         cout << "Error abriendo input.json" << endl;
         return 1;
@@ -27,7 +28,7 @@ int main()
     string jsonText;
     string line;
 
-    while(getline(input, line))
+    while (getline(input, line))
     {
         jsonText += line;
     }
@@ -39,36 +40,39 @@ int main()
 
     size_t pos = 0;
 
-    while(true)
+    while (true)
     {
-        size_t namePos = jsonText.find("\"name\":\"", pos);
+        size_t namePos = jsonText.find("\"name\"", pos);
 
-        if(namePos == string::npos)
+        if (namePos == string::npos)
             break;
 
-        namePos += 8;
+        size_t colonPos = jsonText.find(":", namePos);
+        size_t firstQuote = jsonText.find("\"", colonPos + 1);
+        size_t secondQuote = jsonText.find("\"", firstQuote + 1);
 
-        size_t endName = jsonText.find("\"", namePos);
-
-        string name =
-            jsonText.substr(namePos,
-                            endName - namePos);
+        string name = jsonText.substr(
+            firstQuote + 1,
+            secondQuote - firstQuote - 1);
 
         size_t happinessPos =
-            jsonText.find("\"happiness\":", endName);
+            jsonText.find("\"happiness\"", secondQuote);
 
-        happinessPos += 12;
+        if (happinessPos == string::npos)
+            break;
 
-        size_t endHappy =
-            jsonText.find("}", happinessPos);
+        size_t happinessColon =
+            jsonText.find(":", happinessPos);
 
-        int happiness =
-            stoi(
-                jsonText.substr(
-                    happinessPos,
-                    endHappy - happinessPos
-                )
-            );
+        size_t happinessEnd =
+            jsonText.find_first_of(",}", happinessColon);
+
+        string happinessStr =
+            jsonText.substr(
+                happinessColon + 1,
+                happinessEnd - happinessColon - 1);
+
+        int happiness = stoi(happinessStr);
 
         adjacencyList.insert(name);
 
@@ -78,13 +82,28 @@ int main()
 
         happinessTree.insert(b);
 
-        pos = endHappy;
+        pos = happinessEnd;
     }
 
-    Building happiest =
-        happinessTree.getMax();
+    cout << "Total edificios: "
+         << adjacencyList.size()
+         << endl;
+
+    if (adjacencyList.size() == 0)
+    {
+        cout << "No se encontraron edificios en input.json" << endl;
+        return 1;
+    }
+
+    Building happiest = happinessTree.getMax();
 
     ofstream state("../data/state.json");
+
+    if (!state.is_open())
+    {
+        cout << "Error creando state.json" << endl;
+        return 1;
+    }
 
     state << "{\n";
     state << "  \"totalBuildings\": "
