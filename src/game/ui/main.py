@@ -142,24 +142,33 @@ def run_automated_backend_sync():
         
         # Absolute Hardware Path Configurations
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        engine_dir = os.path.abspath(os.path.join(base_dir, "../../engine"))
-        data_dir = os.path.abspath(os.path.join(base_dir, "../../data"))
+        engine_dir = os.path.normpath(os.path.join(base_dir, "../../engine"))
+        data_dir = os.path.normpath(os.path.join(base_dir, "../../data"))
         
         cpp_file = os.path.join(engine_dir, "main.cpp")
         exe_file = os.path.join(engine_dir, "engine.exe")
         input_json = os.path.join(data_dir, "input.json")
         state_json = os.path.join(data_dir, "state.json")
-        
-        gxx_compiler = "g++"
-        
-        compile_cmd = f'"{gxx_compiler}" -std=c++11 "{cpp_file}" -o "{exe_file}"'
-        os.system(compile_cmd)
-        
+
+        import shutil, subprocess
+        if not os.path.exists(exe_file):
+            gxx_compiler = "g++"
+            if shutil.which(gxx_compiler):
+                try:
+                    subprocess.run([gxx_compiler, "-std=c++11", cpp_file, "-o", exe_file], check=True)
+                except Exception as e:
+                    print(f"Compilation failed: {e}")
+            else:
+                print("Note: 'g++' not found. Ensure 'engine.exe' is pre-compiled.")
+
         if os.path.exists(exe_file):
-            run_cmd = f'"{exe_file}" "{input_json}" "{state_json}"'
-            os.system(run_cmd)
+            try:
+                # Use normalized paths for Windows compatibility
+                subprocess.run([os.path.normpath(exe_file), os.path.normpath(input_json), os.path.normpath(state_json)], check=True)
+            except Exception as e:
+                print(f"Backend Execution Error: {e}")
         else:
-            print(f"Compilation Aborted! Path missing: {exe_file}")
+            print(f"Sync Aborted! Engine executable missing at: {exe_file}")
         
         try:
             engine_stats = bridge.load_states()
