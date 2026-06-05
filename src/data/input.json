@@ -2,19 +2,38 @@
     "buildings": [
         {
             "name": "House",
+            "type": "residential",
+            "size": 1,
             "happiness": 50
         },
         {
             "name": "School",
+            "type": "Commercial",
+            "size": 2,
             "happiness": 75
         },
         {
             "name": "Park",
+            "type": "Commercial",
+            "size": 3,
             "happiness": 90
         },
         {
             "name": "Hospital",
+            "type": "Commercial",
+            "size": 4,
             "happiness": 85
+        },
+        {
+            "name": "Factory",
+            "type": "Industrial",
+            "size": 3,
+            "happiness": -40
+        },
+        {"name": "Landfill",
+        "type": "Industrial",
+        "size": 2,
+        "happiness": -60
         }
     ]
 }

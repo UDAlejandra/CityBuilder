@@ -13,70 +13,66 @@ using namespace std;
 
 struct ListNode
 {
-    string name;
+    int neighborCellID;
     ListNode *next;
 
-    ListNode(string n)
+    ListNode(int id)
     {
-        name = n;
+        neighborCellID = id;
         next = nullptr;
     }
 };
 
-class LinkedList
+class AdjacencyList
 {
 private:
-    ListNode *head;
+    ListNode *head[64];
+    int totalElements;
 
 public:
-    LinkedList()
+    AdjacencyList()
     {
-        head = nullptr;
+        totalElements = 0;
+        for (int i = 0; i < 64; i++) head[i] = nullptr;
     }
 
-    void insert(string name)
+    void addEdge(int u, int v)
     {
-        ListNode *newNode = new ListNode(name);
+        ListNode *newNode = new ListNode(v);
+        newNode->next = head[u];
+        head[u] = newNode;
 
-        if (head == nullptr)
-        {
-            head = newNode;
-            return;
-        }
-
-        ListNode *temp = head;
-
-        while (temp->next != nullptr)
-            temp = temp->next;
-
-        temp->next = newNode;
+        newNode = new ListNode(u);
+        newNode->next = head[v];
+        head[v] = newNode;
+        
+        totalElements++;
     }
 
-    int size()
+    bool isAdjacent(int u, int v)
     {
-        int count = 0;
-
-        ListNode *temp = head;
-
+        ListNode *temp = head[u];
         while (temp != nullptr)
         {
-            count++;
+            if (temp->neighborCellID == v) return true;
             temp = temp->next;
         }
-
-        return count;
+        return false;
     }
 
-    void display()
+    int size() { return totalElements; }
+
+    ~AdjacencyList()
     {
-        ListNode *temp = head;
-
-        while (temp != nullptr)
+        for (int i = 0; i < 64; i++)
         {
-            cout << temp->name << " -> ";
-            temp = temp->next;
+            ListNode *current = head[i];
+            while (current != nullptr)
+            {
+                ListNode *next = current->next;
+                delete current;
+                current = next;
+            }
         }
-
-        cout << "NULL" << endl;
     }
 };

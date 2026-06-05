@@ -1,9 +1,8 @@
 /* ==========================================
    Team Number: 3
-   Variant Name: main.cpp
+   Variant Name: main.cpp (Robust Paths)
    Student Names: Ivan Lopez, Maria Ortiz, Jenny Leon
    ========================================== */
-
 
 #include <iostream>
 #include <fstream>
@@ -14,122 +13,138 @@ using namespace std;
 #include "linked_list.cpp"
 #include "tree.cpp"
 
-int main()
+int main(int argc, char* argv[])
 {
-    ifstream input("../data/input.json");
+    // Fallback default paths if no arguments are passed
+    string inputPath = "../data/input.json";
+    string outputPath = "../data/state.json";
 
+    // If Python sends us explicit target paths, use them instead!
+    if (argc >= 3) {
+        inputPath = argv[1];
+        outputPath = argv[2];
+    }
+
+    ifstream input(inputPath);
     if (!input.is_open())
     {
-        cout << "Error abriendo input.json" << endl;
+        cout << "Error opening input file at: " << inputPath << endl;
         return 1;
     }
 
-    string jsonText;
-    string line;
-
-    while (getline(input, line))
-    {
-        jsonText += line;
-    }
-
+    string jsonText, line;
+    while (getline(input, line)) jsonText += line;
     input.close();
 
-    LinkedList adjacencyList;
-    BST happinessTree;
+    string gridNames[64];
+    string gridTypes[64];
+    for(int i=0; i<64; i++) {
+        gridNames[i] = "empty";
+        gridTypes[i] = "empty";
+    }
 
-    size_t pos = 0;
-
-    while (true)
+    size_t nameArrayPos = jsonText.find("\"grid_layout\"");
+    if (nameArrayPos != string::npos)
     {
-        size_t namePos = jsonText.find("\"name\"", pos);
+        int idx = 0;
+        size_t searchPos = nameArrayPos;
+        while (idx < 64)
+        {
+            size_t openQ = jsonText.find("\"", searchPos + 1);
+            if (openQ == string::npos) break;
+            size_t closeQ = jsonText.find("\"", openQ + 1);
+            string val = jsonText.substr(openQ + 1, closeQ - openQ - 1);
+            
+            if (val != "grid_layout" && val != "buildings" && val != "grid_types") {
+                gridNames[idx] = val;
+                idx++;
+            }
+            searchPos = closeQ;
+        }
+    }
 
-        if (namePos == string::npos)
-            break;
+    size_t typeArrayPos = jsonText.find("\"grid_types\"");
+    if (typeArrayPos != string::npos)
+    {
+        int idx = 0;
+        size_t searchPos = typeArrayPos;
+        while (idx < 64)
+        {
+            size_t openQ = jsonText.find("\"", searchPos + 1);
+            if (openQ == string::npos) break;
+            size_t closeQ = jsonText.find("\"", openQ + 1);
+            string val = jsonText.substr(openQ + 1, closeQ - openQ - 1);
+            
+            if (val != "grid_types" && val != "empty" && val != "Residential" && val != "Commercial" && val != "Industrial") {
+                searchPos = closeQ;
+                continue;
+            }
+            gridTypes[idx] = val;
+            idx++;
+            searchPos = closeQ;
+        }
+    }
 
-        size_t colonPos = jsonText.find(":", namePos);
-        size_t firstQuote = jsonText.find("\"", colonPos + 1);
-        size_t secondQuote = jsonText.find("\"", firstQuote + 1);
+    AdjacencyList adjacencyGraph;
+    BST happinessTree;
+    int buildingsDiscovered = 0;
 
-        string name = jsonText.substr(
-            firstQuote + 1,
-            secondQuote - firstQuote - 1);
+    for (int r = 0; r < 8; r++)
+    {
+        for (int c = 0; c < 8; c++)
+        {
+            int currentCell = r * 8 + c;
+            if (gridNames[currentCell] != "empty")
+            {
+                buildingsDiscovered++;
+                if (c < 7 && gridNames[currentCell + 1] != "empty")
+                    adjacencyGraph.addEdge(currentCell, currentCell + 1);
+                if (r < 7 && gridNames[(r + 1) * 8 + c] != "empty")
+                    adjacencyGraph.addEdge(currentCell, (r + 1) * 8 + c);
+            }
+        }
+    }
 
-        size_t happinessPos =
-            jsonText.find("\"happiness\"", secondQuote);
-
-        if (happinessPos == string::npos)
-            break;
-
-        size_t happinessColon =
-            jsonText.find(":", happinessPos);
-
-        size_t happinessEnd =
-            jsonText.find_first_of(",}", happinessColon);
-
-        string happinessStr =
-            jsonText.substr(
-                happinessColon + 1,
-                happinessEnd - happinessColon - 1);
-
-        int happiness = stoi(happinessStr);
-
-        adjacencyList.insert(name);
+    for (int i = 0; i < 64; i++)
+    {
+        if (gridNames[i] == "empty") continue;
 
         Building b;
-        b.name = name;
-        b.happiness = happiness;
+        b.name = gridNames[i];
+        
+        if (b.name == "House") b.happiness = 50;
+        else if (b.name == "School") b.happiness = 75;
+        else if (b.name == "Park") b.happiness = 90;
+        else if (b.name == "Hospital") b.happiness = 85;
+        else if (b.name == "Factory") b.happiness = -40;
+        else if (b.name == "Landfill") b.happiness = -60;
 
+        if (gridTypes[i] == "Residential")
+        {
+            for (int neighbor = 0; neighbor < 64; neighbor++)
+            {
+                if (adjacencyGraph.isAdjacent(i, neighbor) && gridTypes[neighbor] == "Industrial")
+                {
+                    b.happiness -= 50; 
+                }
+            }
+        }
         happinessTree.insert(b);
-
-        pos = happinessEnd;
     }
 
-    cout << "Total edificios: "
-         << adjacencyList.size()
-         << endl;
+    Building happiest;
+    if (buildingsDiscovered > 0) happiest = happinessTree.getMax();
+    else { happiest.name = "None"; happiest.happiness = 0; }
 
-    if (adjacencyList.size() == 0)
-    {
-        cout << "No se encontraron edificios en input.json" << endl;
-        return 1;
-    }
-
-    Building happiest = happinessTree.getMax();
-
-    ofstream state("../data/state.json");
-
-    if (!state.is_open())
-    {
-        cout << "Error creando state.json" << endl;
-        return 1;
-    }
-
+    ofstream state(outputPath);
     state << "{\n";
-    state << "  \"totalBuildings\": "
-          << adjacencyList.size()
-          << ",\n";
-
+    state << "  \"totalBuildings\": " << buildingsDiscovered << ",\n";
     state << "  \"happiestBuilding\": {\n";
-    state << "    \"name\": \""
-          << happiest.name
-          << "\",\n";
-
-    state << "    \"happiness\": "
-          << happiest.happiness
-          << "\n";
-
+    state << "    \"name\": \"" << happiest.name << "\",\n";
+    state << "    \"happiness\": " << happiest.happiness << "\n";
     state << "  }\n";
     state << "}\n";
-
     state.close();
-
-    cout << "\n=== BUILDING LIST ===\n";
-    adjacencyList.display();
-
-    cout << "\n=== HAPPINESS TREE ===\n";
-    happinessTree.print();
-
-    cout << "\nstate.json generado correctamente\n";
 
     return 0;
 }
