@@ -8,7 +8,7 @@
 import json
 import os
 
-url = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data"))
+url = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file__), "../data")))
 
 def load_buildings():
 

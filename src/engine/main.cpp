@@ -1,6 +1,6 @@
 /* ==========================================
    Team Number: 3
-   Variant Name: main.cpp (Robust Paths)
+   Variant Name: main.cpp (Improved JSON Parser)
    Student Names: Ivan Lopez, Maria Ortiz, Jenny Leon
    ========================================== */
 
@@ -15,11 +15,9 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    // Fallback default paths if no arguments are passed
-    string inputPath = "../data/input.json";
-    string outputPath = "../data/state.json";
+    string inputPath = "src/data/input.json";
+    string outputPath = "src/data/state.json";
 
-    // If Python sends us explicit target paths, use them instead!
     if (argc >= 3) {
         inputPath = argv[1];
         outputPath = argv[2];
@@ -43,47 +41,32 @@ int main(int argc, char* argv[])
         gridTypes[i] = "empty";
     }
 
-    size_t nameArrayPos = jsonText.find("\"grid_layout\"");
-    if (nameArrayPos != string::npos)
-    {
+    auto extractArray = [&](string key, string* target) {
+        size_t keyPos = jsonText.find("\"" + key + "\"");
+        if (keyPos == string::npos) return;
+        
+        size_t startBracket = jsonText.find("[", keyPos);
+        if (startBracket == string::npos) return;
+        
+        size_t endBracket = jsonText.find("]", startBracket);
+        if (endBracket == string::npos) return;
+        
+        string arrayContent = jsonText.substr(startBracket + 1, endBracket - startBracket - 1);
         int idx = 0;
-        size_t searchPos = nameArrayPos;
-        while (idx < 64)
-        {
-            size_t openQ = jsonText.find("\"", searchPos + 1);
+        size_t pos = 0;
+        while (idx < 64) {
+            size_t openQ = arrayContent.find("\"", pos);
             if (openQ == string::npos) break;
-            size_t closeQ = jsonText.find("\"", openQ + 1);
-            string val = jsonText.substr(openQ + 1, closeQ - openQ - 1);
+            size_t closeQ = arrayContent.find("\"", openQ + 1);
+            if (closeQ == string::npos) break;
             
-            if (val != "grid_layout" && val != "buildings" && val != "grid_types") {
-                gridNames[idx] = val;
-                idx++;
-            }
-            searchPos = closeQ;
+            target[idx++] = arrayContent.substr(openQ + 1, closeQ - openQ - 1);
+            pos = closeQ + 1;
         }
-    }
+    };
 
-    size_t typeArrayPos = jsonText.find("\"grid_types\"");
-    if (typeArrayPos != string::npos)
-    {
-        int idx = 0;
-        size_t searchPos = typeArrayPos;
-        while (idx < 64)
-        {
-            size_t openQ = jsonText.find("\"", searchPos + 1);
-            if (openQ == string::npos) break;
-            size_t closeQ = jsonText.find("\"", openQ + 1);
-            string val = jsonText.substr(openQ + 1, closeQ - openQ - 1);
-            
-            if (val != "grid_types" && val != "empty" && val != "Residential" && val != "Commercial" && val != "Industrial") {
-                searchPos = closeQ;
-                continue;
-            }
-            gridTypes[idx] = val;
-            idx++;
-            searchPos = closeQ;
-        }
-    }
+    extractArray("grid_layout", gridNames);
+    extractArray("grid_types", gridTypes);
 
     AdjacencyList adjacencyGraph;
     BST happinessTree;
@@ -118,6 +101,7 @@ int main(int argc, char* argv[])
         else if (b.name == "Hospital") b.happiness = 85;
         else if (b.name == "Factory") b.happiness = -40;
         else if (b.name == "Landfill") b.happiness = -60;
+        else b.happiness = 0;
 
         if (gridTypes[i] == "Residential")
         {
